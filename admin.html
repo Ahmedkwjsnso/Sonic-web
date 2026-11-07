@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SONIC ADMIN CONSOLE</title>
+<link rel="stylesheet" href="/static/style.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  .terminal { background-color: #000; color: #00ff00; font-family: 'JetBrains Mono', monospace; padding: 15px; border-radius: 10px; border: 1px solid #00ff00; height: 250px; overflow-y: auto; direction: ltr; text-align: left; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); font-size: 0.85rem;}
+  .terminal-input { background-color: #000; color: #00ff00; border: 1px solid #00ff00; font-family: 'JetBrains Mono', monospace; width: 100%; padding: 12px; border-radius: 8px; outline: none; direction: ltr; text-align: left; transition: 0.3s;}
+  .terminal-input:focus { box-shadow: 0 0 15px rgba(0, 255, 0, 0.4); }
+  .t-error { color: #ff3333; }
+  .t-success { color: #00ff00; }
+  .user-row { display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid rgba(255,0,51,.1); font-size:0.9rem; background: rgba(255,255,255,.02); margin-bottom: 5px; border-radius: 8px;}
+  .user-row:hover { background: rgba(255,255,255,.05); }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="container" style="max-width: 800px;">
+  
+  <section id="loginScreen" class="card" style="margin-top: 50px;">
+    <h2 style="text-align:center;">🔒 لوحة التحكم المركزية</h2>
+    <input id="passInput" type="password" placeholder="كلمة سر الأدمن">
+    <button class="btn btn-glow" onclick="verify()">دخول آمن</button>
+  </section>
+
+  <div id="adminPanel" class="hidden">
+    <header style="margin-bottom: 20px;">
+      <h1 class="logo" style="color:#00ff00; text-shadow: 0 0 20px #00ff00; font-size: 2.5rem;">ADMIN <span>👑</span></h1>
+    </header>
+    
+    <section class="card">
+      <h2>ملخص الحالة</h2>
+      <div id="stats" style="margin-bottom:15px; font-weight:bold; font-size: 1.1rem; color: #fff;"></div>
+      <button class="btn btn-red" onclick="loadAll()">🔄 تحديث البيانات</button>
+    </section>
+
+    <section class="card">
+      <h2>💻 سطر الأوامر (Terminal)</h2>
+      <div id="terminal" class="terminal">
+        <div>SONIC X Admin Console v2.0</div>
+        <div>Type /vip [username] or /solve [username] [amount]</div>
+        <div>---------------------------------------------</div>
+      </div>
+      <input id="cmdInput" class="terminal-input" placeholder="اكتب الأمر هنا واضغط Enter..." onkeydown="if(event.key === 'Enter') executeCommand()">
+    </section>
+
+    <section class="card">
+      <h2>قائمة المستخدمين (مرتبين بالأحدث)</h2>
+      <input id="searchInput" placeholder="ابحث عن مستخدم..." oninput="renderUsers()" style="margin-bottom:15px;">
+      <div id="userList" class="log" style="max-height:500px; background: transparent; border: none; padding: 0;"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+let key = '';
+let allUsers = [];
+
+async function verify() {
+  const pass = document.getElementById('passInput').value;
+  try {
+    const r = await fetch('/api/admin/verify', {headers:{'X-Admin-Key':pass}});
+    if(r.ok) {
+      key = pass;
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('adminPanel').classList.remove('hidden');
+      loadAll();
+    } else alert('كلمة السر غلط!');
+  } catch(e) { alert('خطأ في الاتصال'); }
+}
+
+async function adminFetch(path, body=null){
+  const opts = {method: body?'POST':'GET', headers:{'X-Admin-Key':key}};
+  if(body){opts.headers['Content-Type']='application/json'; opts.body=JSON.stringify(body);}
+  const r = await fetch(path, opts);
+  return r.json();
+}
+
+async function loadAll() {
+  const d = await adminFetch('/api/admin/list');
+  allUsers = d.users || [];
+  
+  // ترتيب المستخدمين حسب اللي متصل الأول
+  allUsers.sort((a, b) => b.online - a.online);
+
+  document.getElementById('stats').innerHTML = 
+    `👥 مستخدمين: ${allUsers.length} &nbsp;|&nbsp; ✅ نجاح: ${d.stats.success} &nbsp;|&nbsp; ❌ فشل: ${d.stats.failed}`;
+  renderUsers();
+}
+
+function renderUsers() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = allUsers.filter(u => u.username.toLowerCase().includes(search));
+  const container = document.getElementById('userList');
+  
+  if (filtered.length === 0) {
+    container.innerHTML = '<p style="text-align:center; color:#ff8899;">لا يوجد نتائج</p>';
+    return;
+  }
+  
+  container.innerHTML = filtered.map(u => `
+    <div class="user-row" style="border-right: 4px solid ${u.online ? '#00ff00' : '#333'};">
+      <div>
+        <b style="color: ${u.credits === 'VIP' ? '#00ff00' : '#fff'}; font-size: 1rem;">${u.username}</b> 
+        ${u.online ? '<span style="color:#00ff00; font-size:0.7rem;">(متصل 🟢)</span>' : '<span style="color:#666; font-size:0.7rem;">(غير متصل ⚪)</span>'}
+        <br>
+        <span style="font-size:0.8rem; color:#aaa; margin-top: 4px; display: inline-block;">
+          🐍 ${u.solved_python} &nbsp; | &nbsp; ☕ ${u.solved_js} &nbsp; | &nbsp; 💰 ${u.solved_spx}
+        </span>
+      </div>
+      <div style="color: ${u.credits === 'VIP' ? '#00ff00' : '#ffcc00'}; font-weight:bold; font-size: 0.9rem; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 8px;">
+        ${u.credits} فرصة
+      </div>
+    </div>
+  `).join('');
+}
+
+async function executeCommand() {
+  const input = document.getElementById('cmdInput');
+  const cmdText = input.value.trim();
+  if(!cmdText) return;
+  
+  const terminal = document.getElementById('terminal');
+  terminal.innerHTML += `<div style="color:#fff;">> ${cmdText}</div>`;
+  input.value = '';
+  
+  const parts = cmdText.split(' ');
+  const command = parts[0].toLowerCase();
+  
+  if (command === '/vip' && parts.length === 2) {
+    const target = parts[1];
+    const res = await adminFetch('/api/admin/vip', {username: target});
+    if(res.ok) terminal.innerHTML += `<div class="t-success">✅ VIP activated for ${target}</div>`;
+    else terminal.innerHTML += `<div class="t-error">❌ User not found.</div>`;
+  } 
+  else if (command === '/solve' && parts.length === 3) {
+    const target = parts[1];
+    const amount = parseInt(parts[2]);
+    if(isNaN(amount)) {
+      terminal.innerHTML += `<div class="t-error">❌ Error: Invalid amount.</div>`;
+    } else {
+      const res = await adminFetch('/api/admin/add', {username: target, amount: amount});
+      if(res.ok) terminal.innerHTML += `<div class="t-success">✅ Added ${amount} credits to ${target}</div>`;
+      else terminal.innerHTML += `<div class="t-error">❌ User not found.</div>`;
+    }
+  } 
+  else {
+    terminal.innerHTML += `<div class="t-error">❌ Command not found.</div>`;
+  }
+  
+  loadAll();
+  terminal.scrollTop = terminal.scrollHeight;
+}
+</script>
+</body>
+</html>

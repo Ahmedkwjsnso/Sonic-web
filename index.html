@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SONIC X 🔴</title>
+<link rel="stylesheet" href="/static/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="container">
+  
+  <!-- الهيدر -->
+  <header>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+      <div class="online-badge">🟢 <span id="onlineCount">0</span> متصل الآن</div>
+      <button class="btn-dashboard" onclick="toggleDashboard()">📊 لوحة الصدارة</button>
+    </div>
+    <h1 class="logo">SONIC <span>X</span></h1>
+    <p class="sub">حل تلقائي • SPX • Qureo</p>
+  </header>
+
+  <!-- لوحة الصدارة (مخفية في الأول) -->
+  <section id="dashboardBox" class="card hidden">
+    <h2 style="text-align:center;">🏆 أفضل 5 طلاب</h2>
+    <div id="leaderboardList" class="leaderboard-list"></div>
+  </section>
+
+  <!-- شاشة الدخول والتسجيل -->
+  <section id="authBox" class="card">
+    <h2 id="authTitle">تسجيل الدخول</h2>
+    <input id="username" placeholder="اسم المستخدم">
+    <input id="password" type="password" placeholder="كلمة المرور">
+    <button id="authBtn" class="btn btn-glow">دخول</button>
+    <p style="text-align:center; margin-top:12px; color:#ff8899; cursor:pointer;" onclick="toggleAuth()">
+      <span id="authSwitch">معندكش حساب؟ سجل دلوقتي</span>
+    </p>
+    <div id="authError" style="color:#ff3355; text-align:center; margin-top:8px;"></div>
+  </section>
+
+  <!-- واجهة المستخدم بعد الدخول -->
+  <div id="userPanel" class="hidden">
+    
+    <section class="card" style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h2 style="margin:0; font-size:1.1rem; color:#fff;">👤 <span id="welcomeName"></span></h2>
+        <p id="creditInfo" style="color:#ff8899; font-size:0.9rem; margin-top:5px;"></p>
+      </div>
+      <button class="btn btn-red" style="padding:8px 12px; font-size:0.8rem;" onclick="logout()">خروج</button>
+    </section>
+
+    <!-- الداشبورد الشخصي -->
+    <section class="card" style="background: linear-gradient(145deg, rgba(30,0,5,.9), rgba(15,0,0,.95)); border-color: rgba(255,0,51,.15);">
+      <h2>📊 إحصائياتك (حليت كام؟)</h2>
+      <div style="display:flex; justify-content:space-around; text-align:center;">
+        <div><span style="color:#00ff00; font-size:1.5rem; font-weight:900;" id="dash_python">0</span><br><span style="font-size:0.8rem; color:#aaa;">🐍 بايثون</span></div>
+        <div><span style="color:#00ccff; font-size:1.5rem; font-weight:900;" id="dash_js">0</span><br><span style="font-size:0.8rem; color:#aaa;">☕ جافا</span></div>
+        <div><span style="color:#ffcc00; font-size:1.5rem; font-weight:900;" id="dash_spx">0</span><br><span style="font-size:0.8rem; color:#aaa;">💰 ثقافة</span></div>
+      </div>
+    </section>
+
+    <section id="platforms" class="card">
+      <h2>اختر المادة</h2>
+      <div class="grid">
+        <button class="btn btn-red" data-p="js">☕ JavaScript</button>
+        <button class="btn btn-red" data-p="python">🐍 Python</button>
+        <button class="btn btn-red" data-p="spx">💰 الثقافة المالية</button>
+      </div>
+    </section>
+
+    <section id="loginBox" class="card hidden">
+      <h2 id="selected">—</h2>
+      <input id="login_id" placeholder="كود الطالب (من المنصة)">
+      <input id="password2" type="password" placeholder="كلمة مرور المنصة">
+      <button id="startBtn" class="btn btn-glow">🚀 بدء الحل</button>
+    </section>
+
+    <section id="progressBox" class="card hidden">
+      <h2>⏳ جاري الحل</h2>
+      <div class="bar"><div id="fill"></div></div>
+      <p id="stage" class="stage"></p>
+      <div id="log" class="log"></div>
+    </section>
+  </div>
+
+  <footer>
+    <a href="/admin-sonic-x" class="admin-link">👑 لوحة الأدمن</a>
+  </footer>
+</div>
+<script src="/static/script.js"></script>
+</body>
+</html>

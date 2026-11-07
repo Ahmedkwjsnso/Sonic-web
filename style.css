@@ -1,0 +1,65 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
+    background: #050000; 
+    color: #fff; 
+    min-height: 100vh; 
+    overflow-x: hidden; 
+    position: relative; 
+}
+.bg-glow { 
+    position: fixed; inset: 0; 
+    background: radial-gradient(circle at 10% 20%, rgba(255,0,50,.2), transparent 40%), 
+                radial-gradient(circle at 90% 80%, rgba(200,0,0,.25), transparent 50%), 
+                radial-gradient(circle at 50% 50%, rgba(120,0,0,.15), transparent 70%); 
+    z-index: 0; animation: pulse 8s ease-in-out infinite; 
+}
+@keyframes pulse { 50% { opacity: .6; } }
+.container { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; padding: 20px 15px 60px; }
+
+/* الهيدر */
+header { text-align: center; margin-bottom: 25px; }
+.online-badge { background: rgba(0,255,0,.1); border: 1px solid rgba(0,255,0,.3); color: #00ff00; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; display: inline-block;}
+.btn-dashboard { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.2); color: #fff; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: 0.3s;}
+.btn-dashboard:hover { background: rgba(255,255,255,.1); }
+.logo { font-size: 3rem; font-weight: 900; letter-spacing: 2px; background: linear-gradient(135deg, #ff0033, #ff0044, #c40000); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 30px rgba(255,0,51,.5); margin-top: 10px;}
+.logo span { color: #ff1a3c; -webkit-text-fill-color: #ff1a3c; }
+.sub { color: #ff6b7d; margin-top: 5px; font-size: .9rem; font-weight: bold; letter-spacing: 1px;}
+
+/* الكروت */
+.card { background: linear-gradient(145deg, rgba(25,0,5,.95), rgba(10,0,0,.98)); border: 1px solid rgba(255,0,51,.25); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 30px rgba(255,0,51,.1), inset 0 0 20px rgba(255,0,51,.03); backdrop-filter: blur(10px); transition: transform 0.3s;}
+.card:hover { transform: translateY(-2px); border-color: rgba(255,0,51,.4);}
+.card h2 { color: #ff3355; margin-bottom: 15px; font-size: 1.15rem; }
+.hidden { display: none !important; }
+.grid { display: grid; gap: 12px; grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 550px) { .grid { grid-template-columns: 1fr; } }
+
+/* الأزرار */
+.btn { padding: 14px 18px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .3s; color: #fff; font-family: inherit; }
+.btn-red { background: linear-gradient(135deg, #b8001f, #ff0033); box-shadow: 0 4px 15px rgba(255,0,51,.3); border: 1px solid rgba(255,0,51,.5);}
+.btn-red:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(255,0,51,.6); }
+.btn-glow { width: 100%; margin-top: 10px; padding: 15px; background: linear-gradient(135deg, #ff0033, #ff1a3c, #cc0022); background-size: 200% 200%; animation: grad 3s ease infinite; font-size: 1.1rem; box-shadow: 0 0 20px rgba(255,0,51,.5); }
+@keyframes grad { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+/* الحقول */
+input { width: 100%; margin-bottom: 12px; padding: 14px 15px; background: rgba(0,0,0,.7); border: 1px solid rgba(255,0,51,.3); border-radius: 10px; color: #fff; font-size: 1rem; font-family: inherit; transition: 0.3s;}
+input:focus { outline: none; border-color: #ff0033; box-shadow: 0 0 10px rgba(255,0,51,.3); background: rgba(0,0,0,.9);}
+
+/* التقدم والسجلات */
+.bar { height: 12px; background: rgba(255,0,51,.1); border-radius: 10px; overflow: hidden; margin: 15px 0; border: 1px solid rgba(255,0,51,.2); }
+.bar > div { height: 100%; width: 0%; background: linear-gradient(90deg, #ff0033, #ff6688); box-shadow: 0 0 15px #ff0033; transition: width .3s; }
+.stage { color: #ff8899; margin-bottom: 10px; font-size: .9rem; font-weight: bold;}
+.log { max-height: 200px; overflow-y: auto; background: rgba(0,0,0,.6); border-radius: 10px; padding: 15px; font-family: monospace; font-size: .85rem; direction: ltr; border: 1px solid rgba(255,255,255,.05);}
+.log div { padding: 4px 0; color: #ccc; border-bottom: 1px solid rgba(255,255,255,.03);}
+.log div:last-child { border-bottom: none; }
+
+/* لوحة الصدارة */
+.leaderboard-list { display: flex; flex-direction: column; gap: 8px; }
+.lb-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.03); padding: 12px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,.05); }
+.lb-rank { font-size: 1.2rem; width: 40px; text-align: center;}
+.lb-name { flex: 1; text-align: right; font-weight: bold; color: #fff;}
+.lb-score { color: #00ff00; font-weight: bold; background: rgba(0,255,0,.1); padding: 3px 10px; border-radius: 10px; font-size: 0.85rem;}
+
+footer { text-align: center; margin-top: 40px; padding-bottom: 20px;}
+.admin-link { color: #ff3355; text-decoration: none; border: 1px solid rgba(255,0,51,.3); padding: 8px 20px; border-radius: 20px; font-size: .85rem; transition: 0.3s; display: inline-block;}
+.admin-link:hover { background: rgba(255,0,51,.1); }
